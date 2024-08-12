@@ -6,24 +6,34 @@ import GoalInputComponent from "./components/Goal_Input";
 
 export default function App() {
   const [courseGoals, SetCourseGoals] = useState([]);
-
   const [ModalIsVisible, SetModalisVisible] = useState(false);
+  const [editGoalId, setEditGoalId] = useState(null);
 
-  function StartModalVisibility() {
+  function StartModalVisibility(goalId = null) {
+    setEditGoalId(goalId);
     SetModalisVisible(true);
   }
 
   function CancelModalVisibilty() {
     SetModalisVisible(false);
+    setEditGoalId(null);
   }
 
-  function AddButtonGoalText(enteredText) {
-    // SetCourseGoals([... courseGoals,AddGoalText]);
-
-    SetCourseGoals((currentCourseGoals) => [
-      ...currentCourseGoals,
-      { text: enteredText, indexNumber: Math.random().toString() },
-    ]);
+  function AddOrEditGoalText(enteredText) {
+    if (editGoalId) {
+      SetCourseGoals((currentCourseGoals) =>
+        currentCourseGoals.map((goal) =>
+          goal.indexNumber === editGoalId
+            ? { ...goal, text: enteredText }
+            : goal
+        )
+      );
+    } else {
+      SetCourseGoals((currentCourseGoals) => [
+        ...currentCourseGoals,
+        { text: enteredText, indexNumber: Math.random().toString() },
+      ]);
+    }
     CancelModalVisibilty();
   }
 
@@ -42,19 +52,19 @@ export default function App() {
         <View style={styles.TopButtonView}>
           <Button
             title="Add New Goal"
-            color="#f13a3a"
-            onPress={StartModalVisibility}
-          ></Button>
+            color="#007bff"
+            onPress={() => StartModalVisibility()}
+          />
         </View>
 
         <GoalInputComponent
-          AddGoal={AddButtonGoalText}
+          AddGoal={AddOrEditGoalText}
           visible={ModalIsVisible}
           OnCancel={CancelModalVisibilty}
+          editGoal={courseGoals.find((goal) => goal.indexNumber === editGoalId)}
         />
 
         <View style={styles.goalListContainer}>
-          {/* <Text style={styles.headingtext}>List of Goals</Text> */}
           <FlatList
             data={courseGoals}
             renderItem={(EachItem) => {
@@ -62,14 +72,13 @@ export default function App() {
                 <GoalItem
                   PassedText={EachItem.item.text}
                   OnDelete={DeleteGoalHandler}
+                  onEdit={() => StartModalVisibility(EachItem.item.indexNumber)}
                   passedID={EachItem.item.indexNumber}
                 />
               );
             }}
-            keyExtractor={(item, index) => {
-              return item.indexNumber;
-            }}
-          ></FlatList>
+            keyExtractor={(item) => item.indexNumber}
+          />
         </View>
       </View>
     </>
@@ -79,39 +88,16 @@ export default function App() {
 const styles = StyleSheet.create({
   appcontainer: {
     flex: 1,
-    backgroundColor: "#e4e4e4",
+    backgroundColor: "#f8f9fa",
     paddingTop: 50,
     paddingHorizontal: 18,
-  },
-  inputAreaView: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-    borderBottomWidth: 2,
-    borderBottomColor: "black",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "black",
-    width: "70%",
-    marginRight: 10,
-    padding: 7,
-    fontSize: 16,
   },
   goalListContainer: {
     flex: 6,
   },
-
-  headingtext: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   TopButtonView: {
     paddingBottom: 15,
     borderBottomWidth: 2,
-    borderBottomColor: "black",
+    borderBottomColor: "#dee2e6",
   },
 });

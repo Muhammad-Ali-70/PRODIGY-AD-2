@@ -6,10 +6,16 @@ import {
   Modal,
   Image,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function GoalInputComponent(props) {
   const [AddGoalText, SetGoalText] = useState("");
+
+  useEffect(() => {
+    if (props.editGoal) {
+      SetGoalText(props.editGoal.text);
+    }
+  }, [props.editGoal]);
 
   function goalInputHandler(enteredText) {
     SetGoalText(enteredText);
@@ -26,28 +32,24 @@ export default function GoalInputComponent(props) {
         <Image
           source={require("../assets/images/goal3.png")}
           style={styles.Image}
-        ></Image>
+        />
         <TextInput
           style={styles.textInput}
           placeholder="Enter Your Goal"
           onChangeText={goalInputHandler}
           value={AddGoalText}
-        ></TextInput>
+        />
 
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
-            <Button
-              title="Cancel"
-              color="#3369ff"
-              onPress={props.OnCancel}
-            ></Button>
+            <Button title="Cancel" color="#6c757d" onPress={props.OnCancel} />
           </View>
           <View style={styles.button}>
             <Button
-              title="Add Goal"
-              color="#f13a3a"
+              title={props.editGoal ? "Edit Goal" : "Add Goal"}
+              color="#007bff"
               onPress={AddgoalTextHandler}
-            ></Button>
+            />
           </View>
         </View>
       </View>
@@ -61,18 +63,18 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#a3eaa3",
+    backgroundColor: "#e9ecef",
     padding: 16,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: "#f13a3a",
+    borderColor: "#007bff",
     width: "100%",
     padding: 16,
     fontSize: 16,
     borderRadius: 8,
     color: "black",
-    backgroundColor: "#fbfbfb",
+    backgroundColor: "#fff",
   },
   buttonContainer: {
     flexDirection: "row",
